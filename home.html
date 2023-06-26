@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            box-sizing: border-box;
+            font-size: 10px;
+            background-color: #f1f1f1;
+            font-family: 'Quicksand', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            color: #272424;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-weight: 700;
+        }
+
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .box {
+            width: 300px;
+            height: max-content;
+            background-color: #b0d6e2;
+            padding-top: 5rem;
+            padding-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 8px;
+            box-shadow: 0px 0px 3px 1px #7f78783b;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #weather-icon i {
+            font-size: 600%;
+            padding-bottom: 9rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .information {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .location-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .location-wrapper i {
+            font-size: 230%;
+            z-index: 1;
+            position: relative;
+        }
+
+        .location {
+            font-size: 280%;
+            line-height: 1.4em;
+            z-index: 1;
+            position: relative;
+        }
+
+        #date {
+            font-size: 140%;
+            font-weight: 600;
+            color: #5a5555cc;
+            margin-top: 2px;
+            margin-bottom: 2rem;
+            z-index: 1;
+            position: relative;
+        }
+
+        .temp {
+            font-size: 400%;
+            z-index: 1;
+            position: relative;
+        }
+
+        .tempmin_max {
+            margin-top: 0px;
+            font-size: 140%;
+            font-weight: 600;
+            color: #5a5555cc;
+            z-index: 1;
+            position: relative;
+        }
+
+        .wave {
+            width: 420px;
+            height: 420px;
+            background-color: #ecf1f344;
+            position: absolute;
+            border-radius: 43%;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .wave-one {
+            animation: rotate 5000ms infinite linear;
+            background-color: #ecf1f344;
+            top: 46%;
+        }
+
+        .wave-two {
+            background-color: #f6f8f944;
+            animation: rotate 7000ms infinite linear;
+            top: 44%;
+        }
+
+        .wave-three {
+            background-color: #fbfcfd44;
+            animation: rotate 9000ms infinite linear;
+            top: 42%;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="box">
+            <div class="wave wave-one"></div>
+            <div class="wave wave-two"></div>
+            <div class="wave wave-three"></div>
+
+            <div id="weather-icon">
+                <i class="fa-solid fa-sun" style="color: #f9ca24;"></i>
+            </div>
+            <div class="information">
+                <div class="location-wrapper">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <h2 class="location">{%city%}, {%country%}</h2>
+                </div>
+                <p id="date">SAT | JUNE 13 | 2023</p>
+                <h1 class="temp">{%tempValue%}&deg; C</h1>
+                <h3 class="tempmin_max">Min {%tempMinVal%}&deg; C | Max
+                    {%tempMaxVal%}&deg; C</h3>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const date = document.getElementById('date');
+
+        const getCurrentTime = () => {
+            const today = new Date();
+            const days = [
+                "SUN",
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT"
+            ];
+            const months = [
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC"
+            ];
+            const currentDay = today.getDay();
+            const currentDayName = days[currentDay];
+            const currentMonth = today.getMonth();
+            const currentMonthName = months[currentMonth];
+            const currentYear = today.getFullYear();
+            const currentDate = today.getDate()
+
+            let hours = today.getHours();
+            let minutes = today.getMinutes();
+            let period = "AM"
+
+            if (hours > 11) {
+                period = "PM";
+                if (hours > 12) hours -= 12;
+            }
+            if (minutes < 10) {
+                minutes = "0" + minutes;
+            }
+
+            let fullDate = `${currentDayName} | ${currentMonthName} ${currentDate} | ${hours}:${minutes} ${period}`;
+
+            date.innerHTML = fullDate;
+            console.log("test_101", hours)
+        }
+
+        getCurrentTime()
+    </script>
+</body>
+
+</html>
